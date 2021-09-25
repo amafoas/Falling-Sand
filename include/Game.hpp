@@ -7,8 +7,8 @@
 
 using namespace std;
 
-#include "Particle.hpp"
 #include "Window.hpp"
+#include "ParticleSystem.hpp"
 
 class Game{
 public:
@@ -21,7 +21,6 @@ public:
     void close();
 
     bool isRunning();
-    Particle* getCell(int x, int y);
 private:
     bool _gameRunning;
     int _zoom;
@@ -29,16 +28,13 @@ private:
     // SANDBOX SIZE 
     int _sizeX = 80;
     int _sizeY = 80;
+    ParticleSystem _ps;
 
     // SDL
     Window _window;
     SDL_Event _event;
 
     vector<pair<int, int>> notNull;
-    vector<vector<Particle*>> _matrix;
-
-    void moveANDdeleteFrom(int x, int y, int offsetX, int offsetY);
-    void logic();
 };
 
 

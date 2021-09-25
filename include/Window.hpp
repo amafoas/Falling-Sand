@@ -2,14 +2,13 @@
 #define WINDOW_HPP
 
 #include <SDL2/SDL.h>
-#include "Particle.hpp"
 
 class Window{
 public:
     Window();
     ~Window();
 
-void render(Particle p);
+void render(int x, int y, int r, int g, int b);
 
 void clear();
 void display();

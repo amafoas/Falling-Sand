@@ -1,9 +1,7 @@
 #include "../include/Game.hpp"
-
 #include <iostream>
 
-Game::Game(): _gameRunning(true), _zoom(2)
-, _matrix(vector<vector<Particle*>>(_sizeX, vector<Particle*> (_sizeY, NULL))){}
+Game::Game(): _gameRunning(true), _zoom(2), _ps(ParticleSystem(_sizeX, _sizeY)){}
 
 Game::~Game(){}
 
@@ -45,91 +43,35 @@ void Game::update(){
         x = x / 10;
         y = y / 10;
 
-        if (_matrix[x][y] == NULL){
-            cout << x << ", " << y << endl;
-            notNull.emplace_back(x, y); 
-            Particle* p = new Particle (x, y);
-            if ( mButton == MOUSE_RIGHT ) p->setSolid(true);
-            _matrix[x][y] = p;
-        }
+        int elem = mButton == MOUSE_LEFT ? SAND : STONE; 
+        if ( _ps.createElement(x, y, elem) ) notNull.emplace_back(x, y); 
     }
 
-    // Do all the logic of the particles
-    logic();
+    for (int i = 0; i < notNull.size(); i++){
+
+        _ps.doLogic(notNull[i].first, notNull[i].second);
+
+    }
+
 }
 
 void Game::draw(){
     _window.clear();
+
+    int x,y;
     for (pair<int, int> cord : notNull) { 
-        _window.render(*_matrix[cord.first][cord.second]);
+        x = cord.first; 
+        y = cord.second;
+        Color color = _ps.getColor(x, y); 
+        _window.render(x, y, color.r, color.g, color.b);
     }
+
     _window.display();
 }
 
 void Game::close(){
-    for (vector<Particle*> row : _matrix) {
-        for (Particle* pointer : row ) {
-            if (pointer != NULL) delete pointer;
-        }
-    }
-
     _window.destroy();
     SDL_Quit();
 }
 
 bool Game::isRunning(){ return _gameRunning; }
-Particle* Game::getCell(int x, int y){ return _matrix[x][y]; }
-
-/// PRIVATE
-
-void Game::moveANDdeleteFrom(int x, int y, int offsetX, int offsetY){
-    // move
-    _matrix[x][y]->moveTo(x + offsetX, y + offsetY);
-    _matrix[x + offsetX][y + offsetY] = _matrix[x][y];
-
-    // delete
-    _matrix[x][y] = NULL;
-};
-
-void Game::logic(){
-    vector<vector<Particle*>> _buffer = _matrix;
-
-    for (int i = 0; i < notNull.size(); i++){
-        int x = notNull[i].first;
-        int y = notNull[i].second;
-
-        bool is_solid = _matrix[x][y]->is_solid();
-
-        // SAND
-        if ( !is_solid && y + 1 > 0 && y + 1 < _sizeY ){
-            if (_buffer[x][y + 1] == NULL) {
-                // move the particle
-                moveANDdeleteFrom(x, y, 0, 1);
-                // update the values
-                notNull[i].second = y + 1;
-            } else if (x + 1 < _sizeX  && _buffer[x + 1][y + 1] == NULL) {
-                // avoid leaks
-                if (_buffer[x + 1][y] == NULL) {
-                    // move the particle
-                    moveANDdeleteFrom(x, y, 1, 1);
-                    // update the values
-                    notNull[i].second = y + 1;
-                    notNull[i].first = x + 1;
-                }
-
-            } else if (x - 1 >= 0      && _buffer[x - 1][y + 1] == NULL) {
-                // avoid leaks
-                if (_buffer[x - 1][y] == NULL) {
-                    // move the particle
-                    moveANDdeleteFrom(x, y, -1, 1);
-                    // update the values
-                    notNull[i].second = y + 1;
-                    notNull[i].first = x - 1;
-                }
-
-            }
-        }
-
-    }
-
-}

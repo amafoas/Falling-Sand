@@ -2,7 +2,6 @@
 #include <SDL2/SDL.h>
 
 #include "../include/Game.hpp"
-#include "../include/Particle.hpp"
 
 int main(int argc, char const *argv[]){
     Game game;
