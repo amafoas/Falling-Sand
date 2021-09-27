@@ -12,7 +12,8 @@ using namespace std;
 
 class Game{
 public:
-    Game();
+    //Game();
+    Game(int width = 800, int height = 800);
     ~Game();
 
     void input();
@@ -23,11 +24,13 @@ public:
     bool isRunning();
 private:
     bool _gameRunning;
-    int _zoom;
 
-    // SANDBOX SIZE 
-    int _sizeX = 80;
-    int _sizeY = 80;
+    // WINDOW SETTINGS
+    int _width;
+    int _height;
+    int _zoom = 10;
+
+    // SANDBOX
     ParticleSystem _ps;
 
     // SDL

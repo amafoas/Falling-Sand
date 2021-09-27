@@ -1,7 +1,11 @@
 #include "../include/Game.hpp"
 #include <iostream>
 
-Game::Game(): _gameRunning(true), _zoom(2), _ps(ParticleSystem(_sizeX, _sizeY)){}
+//Game::Game(): _gameRunning(true), _ps(ParticleSystem(_width/_zoom, _height/_zoom)){}
+
+Game::Game(int width, int height):_gameRunning(true)
+, _width(width), _height(height), _ps(ParticleSystem(_width/_zoom, _height/_zoom))
+, _window(_width, _height, _zoom){}
 
 Game::~Game(){}
 
@@ -37,11 +41,11 @@ void Game::update(){
         int x, y;
         SDL_GetMouseState(&x, &y);
         // keep the values in the limits
-        x = min(800, max(0, x));
-        y = min(800, max(0, y));
+        x = min(_width, max(0, x));
+        y = min(_height, max(0, y));
         // transform cordinates from px to grid
-        x = x / 10;
-        y = y / 10;
+        x = x / _zoom;
+        y = y / _zoom;
 
         int elem = mButton == MOUSE_LEFT ? SAND : STONE; 
         if ( _ps.createElement(x, y, elem) ) notNull.emplace_back(x, y); 
@@ -58,12 +62,9 @@ void Game::update(){
 void Game::draw(){
     _window.clear();
 
-    int x,y;
     for (pair<int, int> cord : notNull) { 
-        x = cord.first; 
-        y = cord.second;
-        Color color = _ps.getColor(x, y); 
-        _window.render(x, y, color.r, color.g, color.b);
+        Color color = _ps.getColor(cord.first, cord.second); 
+        _window.render(cord.first, cord.second, color.r, color.g, color.b);
     }
 
     _window.display();

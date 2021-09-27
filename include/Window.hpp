@@ -5,7 +5,7 @@
 
 class Window{
 public:
-    Window();
+    Window(int width = 800, int height = 800, int zoom = 10);
     ~Window();
 
 void render(int x, int y, int r, int g, int b);

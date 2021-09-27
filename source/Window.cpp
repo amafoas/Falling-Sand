@@ -2,7 +2,8 @@
 
 #include <iostream>
 
-Window::Window(): _width(800), _height(800), _zoom(2)
+Window::Window(int width, int height, int zoom): 
+_width(width), _height(height), _zoom(zoom)
 , _window(NULL), _screenSurface(NULL) {
 
     if( SDL_Init( SDL_INIT_VIDEO ) < 0 ){
@@ -24,10 +25,10 @@ Window::~Window(){}
 
 void Window::render(int x, int y, int r, int g, int b){
     SDL_Rect part;
-    part.x = x *10;
-    part.y = y *10;
-    part.h = 10;
-    part.w = 10;
+    part.x = x * _zoom;
+    part.y = y * _zoom;
+    part.h = _zoom;
+    part.w = _zoom;
 
     SDL_SetRenderDrawColor(_renderer, r, g, b, 255);
     SDL_RenderFillRect(_renderer, &part);
